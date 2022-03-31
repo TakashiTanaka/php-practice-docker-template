@@ -1,0 +1,37 @@
+version: '3' # composeファイルのバージョンを設定
+services: # コンテナの情報
+  php: # phpとapacheを入れるコンテナ
+    image: php:7.4-apache # phpとapacheのセットイメージ
+    networks: # 使用するネットワーク
+      - devnet
+    volumes:
+      - ./html:/var/www/html
+    ports:
+      - 8081:80
+    restart: always
+
+  db: # mysqlを入れるコンテナ
+    image: mysql:5.7 # mysqlの5.7のイメージ
+    networks: # 使用するネットワーク
+      - devnet
+    volumes: # ボリュームを指定
+      - ./db/mysql:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    networks:
+      - devnet
+    depends_on:
+      - db
+    ports:
+      - 8086:80
+
+networks:
+  devnet:
